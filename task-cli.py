@@ -25,7 +25,10 @@ def delete_task(id: int):
 def update_task(id: int, desc: str):
     pass
 
-def list_tasks(status: str = 'all'):
+def mark_task(id: int, status: str):
+    pass
+
+def list_tasks(status: str):
     pass
 
 
@@ -57,14 +60,28 @@ def main():
     # Mark a task as in-progress or done
     parser_mark = subparsers.add_parser("mark", help="Mark a task as in-progress or done")
     parser_mark.add_argument("id", type=int, help="ID of the task to mark")
-    parser_mark.add_argument("status", choices=["in-progress", "done"], help="Status to set (in-progress, done)")
+    parser_mark.add_argument("status", choices=["todo", "in-progress", "done"], 
+                help="Status to set (todo, in-progress, done)")
 
     # List tasks
     parser_list = subparsers.add_parser("list", help="List tasks")
-    parser_list.add_argument("status", type=str, nargs='?', choices=["todo", "in-progress", "done"], help="Filter tasks by status")
+    parser_list.add_argument("status", type=str, nargs='?', default = "all", 
+                choices=["todo", "in-progress", "done"], help="Filter tasks by status")
 
     
-    arg = parser.parse_args()
+    #Parse args
+    args = parser.parse_args()
+
+    if args.action == 'add':
+        add_task(args.description)
+    elif args.action == 'update':
+        update_task(args.id, args.description)
+    elif args.action == 'delete':
+        delete_task(args.id)
+    elif args.action == 'mark':
+        mark_task(args.id, args.status)
+    elif args.action == 'list':
+        list_tasks(args.status)
 
 
 if __name__ == "__main__":
