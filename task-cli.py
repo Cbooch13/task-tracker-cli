@@ -5,25 +5,59 @@
 import argparse
 import os
 import json
+from datetime import datetime
 
 TASKS_FILE = 'tasks.json'
 
 
-
+#Loads tasks from json file into dict
 def load_tasks():
-    pass
+    if os.path.exists(TASKS_FILE):
+        with open(TASKS_FILE, 'r') as file:
+            return json.load(file)
+    else:
+        return []
+    
+    
+#Saves dict into json file
+def save_tasks(tasks):
+    with open(TASKS_FILE, 'w') as file:
+        file.write(json.dumps(tasks, indent=4))
 
-def save_tasks():
-    pass
 
 def add_task(desc: str):
-    pass
+    tasks = load_tasks()
+    today = datetime.today().isoformat()
+    id = 1
+    if len(tasks) > 0:
+        id += max(task['id'] for task in tasks)
+    new_task = {
+        "id" : id,
+        "description" : desc,
+        "status" : "todo",
+        "createdAt" : today,
+        "updatedAt" : today
+    }
+    tasks.append(new_task)
+    save_tasks(tasks)
     
 def delete_task(id: int):
-    pass
+    tasks = load_tasks()
+    removed = False
+    for task in tasks:
+        if task['id'] == id:
+            removed = True
+            tasks.remove(task)
+            break
+    
+    if not removed:
+        print("Task ID " + str(id) + " not found.")
+    
+    save_tasks(tasks)
     
 def update_task(id: int, desc: str):
-    pass
+    tasks = load_tasks()
+    
 
 def mark_task(id: int, status: str):
     pass
