@@ -6,6 +6,7 @@ import argparse
 import os
 import json
 from datetime import datetime
+from tabulate import tabulate
 
 TASKS_FILE = 'tasks.json'
 
@@ -28,9 +29,11 @@ def save_tasks(tasks):
 def add_task(desc: str):
     tasks = load_tasks()
     today = datetime.today().isoformat()
+    #Determines id of new item, either 1 if no tasks or highest existing id + 1
     id = 1
     if len(tasks) > 0:
         id += max(task['id'] for task in tasks)
+
     new_task = {
         "id" : id,
         "description" : desc,
@@ -41,6 +44,7 @@ def add_task(desc: str):
     tasks.append(new_task)
     save_tasks(tasks)
     
+
 def delete_task(id: int):
     tasks = load_tasks()
     removed = False
@@ -52,9 +56,9 @@ def delete_task(id: int):
     
     if not removed:
         print("Task ID " + str(id) + " not found.")
-    
     save_tasks(tasks)
     
+
 def update_task(id: int, desc: str):
     tasks = load_tasks()
     updated = False
@@ -67,16 +71,36 @@ def update_task(id: int, desc: str):
     
     if not updated:
         print("Task ID " + str(id) + " not found.")
-    
     save_tasks(tasks)
 
-
-
+#Marks task to {todo, in-progress, done}
 def mark_task(id: int, status: str):
-    pass
+    tasks = load_tasks()
+    updated = False
+    for task in tasks:
+        if task['id'] == id:
+            updated = True
+            task['status'] = status
+            break
+    
+    if not updated:
+        print("Task ID " + str(id) + " not found.")
+    save_tasks(tasks)
 
+# Lists tasks based on status
 def list_tasks(status: str):
-    pass
+    tasks = load_tasks()
+    
+    if status:
+        filtered = []
+        for task in tasks:
+            if task['status'] == status:
+                filtered.append(task)
+        tasks = filtered
+    
+    #Tabulates the data for output
+    table = tabulate(tasks, headers="keys")
+    print(table)
 
 
 
@@ -112,7 +136,7 @@ def main():
 
     # List tasks
     parser_list = subparsers.add_parser("list", help="List tasks")
-    parser_list.add_argument("status", type=str, nargs='?', default = "all", 
+    parser_list.add_argument("status", type=str, nargs='?', 
                 choices=["todo", "in-progress", "done"], help="Filter tasks by status")
 
     
