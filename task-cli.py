@@ -57,7 +57,20 @@ def delete_task(id: int):
     
 def update_task(id: int, desc: str):
     tasks = load_tasks()
+    updated = False
+    for task in tasks:
+        if task['id'] == id:
+            updated = True
+            task['description'] = desc
+            task['updatedAt'] = datetime.today().isoformat()
+            break
     
+    if not updated:
+        print("Task ID " + str(id) + " not found.")
+    
+    save_tasks(tasks)
+
+
 
 def mark_task(id: int, status: str):
     pass
