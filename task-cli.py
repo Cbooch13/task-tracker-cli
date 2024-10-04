@@ -13,7 +13,6 @@ def main():
         description = "Task Tracker CLI",
         epilog = "Program Usage : python3 task-cli filename.json"
     )
-
     subparsers = parser.add_subparsers(dest='action', required=True)
 
     # Add a task
